@@ -142,4 +142,8 @@ dmypy.json
 *.bam
 *.tsv
 *.html
-
+*.DS_Store
+*.bam.*
+*.yml
+*.csv
+*.dot

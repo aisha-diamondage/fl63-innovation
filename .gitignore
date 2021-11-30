@@ -141,3 +141,5 @@ dmypy.json
 *.bai
 *.bam
 *.tsv
+*.html
+

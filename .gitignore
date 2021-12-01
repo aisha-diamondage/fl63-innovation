@@ -147,3 +147,4 @@ dmypy.json
 *.yml
 *.csv
 *.dot
+*.fasta

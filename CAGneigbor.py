@@ -114,15 +114,85 @@ for item in table:
 
 #print(CAG_total_up_before, CAG_total_up_after, CAG_total_down_before,CAG_total_down_after )
 
-print("codon", "\t", "up_before","\t", "up_after","\t",  "down_before","\t",  "down_after")
+# tAI scores for codons in humans (scores retrieved from Tuller 2010 translational ramp paper)
+tAI = {}
+tAI["TTT"] = 0.161002
+tAI["TTC"] = 0.366748
+tAI["TTA"] = 0.213936
+tAI["TTG"] = 0.282396
+tAI["TCT"] = 0.336186
+tAI["TCC"] = 0.242054
+tAI["TCA"] = 0.152845
+tAI["TCG"] = 0.171149
+tAI["TAT"] = 0.218399
+tAI["TAC"] = 0.449878
+tAI["TAA"] = 0.061128
+tAI["TAG"] = 0.050122
+tAI["TGT"] = 0.402506
+tAI["TGC"] = 0.91687
+tAI["TGA"] = 0.091687
+tAI["TGG"] = 0.304401
+tAI["CTT"] = 0.366748
+tAI["CTC"] = 0.264059
+tAI["CTA"] = 0.091724
+tAI["CTG"] = 0.334963
+tAI["CCT"] = 0.305623
+tAI["CCC"] = 0.220049
+tAI["CCA"] = 0.213967
+tAI["CCG"] = 0.190709
+tAI["CAT"] = 0.147586
+tAI["CAC"] = 0.336186
+tAI["CAA"] = 0.336186
+tAI["CAG"] = 0.749389
+tAI["CGT"] = 0.213936
+tAI["CGC"] = 0.154034
+tAI["CGA"] = 0.183395
+tAI["CGG"] = 0.211491
+tAI["ATT"] = 0.535208
+tAI["ATC"] = 0.552567
+tAI["ATA"] = 0.152855
+tAI["ATG"] = 0.611247
+tAI["ACT"] = 0.305623
+tAI["ACC"] = 0.220049
+tAI["ACA"] = 0.183405
+tAI["ACG"] = 0.242054
+tAI["AAT"] = 0.459902
+tAI["AAC"] = 1
+tAI["AAA"] = 0.519563
+tAI["AAG"] = 0.685819
+tAI["AGT"] = 0.107335
+tAI["AGC"] = 0.244499
+tAI["AGA"] = 0.183374
+tAI["AGG"] = 0.211491
+tAI["GTT"] = 0.336186
+tAI["GTC"] = 0.242054
+tAI["GTA"] = 0.152845
+tAI["GTG"] = 0.537897
+tAI["GCT"] = 0.886308
+tAI["GCC"] = 0.638142
+tAI["GCA"] = 0.27515
+tAI["GCG"] = 0.240831
+tAI["GAT"] = 0.254921
+tAI["GAC"] = 0.580685
+tAI["GAA"] = 0.397311
+tAI["GAG"] = 0.52445
+tAI["GGT"] = 0.201253
+tAI["GGC"] = 0.458435
+tAI["GGA"] = 0.275061
+tAI["GGG"] = 0.301956
+
+print("#The tRNA adaptation index (tAI) is a widely used measure of the efficiency by which a coding sequence is recognized by the intra-cellular tRNA pool")
+print("# tAI scores for codons in humans were retreived from the PDCUB BioArchives paper in which they use scores retrieved from Tuller 2010 translational ramp paper\n")
+print("#codon", "\t", "tAI_score", "\t", "up_before","\t", "up_after","\t",  "down_before","\t",  "down_after")
 
 for item in table:   
     ub = round(100*(up_before_count[item]/CAG_total_up_before), 2)
     ua = round(100*(up_after_count[item]/CAG_total_up_after), 2)
     db = round(100*(down_before_count[item]/CAG_total_down_before), 2)
     da = round(100*(down_after_count[item]/CAG_total_down_after), 2)
+    tai_score= round(tAI[item], 2)
     
-    print(item,"\t",  ub,"\t", ua ,"\t", db ,"\t", da )
+    print(item,"\t",tai_score , "\t", ub,"\t", ua ,"\t", db ,"\t", da )
     
     
     

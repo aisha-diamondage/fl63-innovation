@@ -58,16 +58,17 @@ for item in table:
             
 for chunk in up:
     for neighbor in up[chunk][6].split("|"):
-        if neighbor  != ' ':
+        if neighbor.strip()  != '':
             aa = neighbor.split(":")[0].split("-")[0].strip()
             if aa == "TAG" or aa == "TAA":
                 print(aa, "EQUALS STOP:", up[chunk])
+            #print(neighbor.split(":"))
             count = int(neighbor.split(":")[1].split("(")[0].strip())
             up_before_count[aa]= up_before_count[aa] + count
             
 for chunk in up:   
     for neighbor in up[chunk][7].split("|"):
-        if neighbor  != ' ':
+        if neighbor.strip()   != '':
              aa = neighbor.split(":")[0].split("-")[0].strip()
              #if aa == "TAG" or aa == "TAA":
               #  print(aa, "EQUALS STOP:",up[chunk])
@@ -80,7 +81,7 @@ for chunk in up:
 
 for chunk in down:
     for neighbor in down[chunk][6].split("|"):
-        if neighbor  != ' ':
+        if neighbor.strip()   != '':
             aa = neighbor.split(":")[0].split("-")[0].strip()
             if aa == "TAG" or aa == "TAA":
                 print(aa, "EQUALS STOP:", down[chunk])
@@ -89,7 +90,7 @@ for chunk in down:
 
 for chunk in down:   
     for neighbor in down[chunk][7].split("|"):
-        if neighbor  != ' ':
+        if neighbor.strip()   != '':
              aa = neighbor.split(":")[0].split("-")[0].strip()
              #if aa == "TAG" or aa == "TAA":
               #  print(aa, "EQUALS STOP:", down[chunk])
@@ -101,11 +102,42 @@ for chunk in down:
 #print(down_after_count)
 
 CAG_total_up_before=0
-CAG_total_up_fater=0
+CAG_total_up_after=0
 CAG_total_down_before=0
 CAG_total_down_after=0
 
-#for item in table:
+for item in table:
+    CAG_total_up_before = CAG_total_up_before + up_before_count[item]
+    CAG_total_up_after = CAG_total_up_after + up_after_count[item]
+    CAG_total_down_before = CAG_total_down_before + down_before_count[item]
+    CAG_total_down_after = CAG_total_down_after + down_after_count[item]
+
+#print(CAG_total_up_before, CAG_total_up_after, CAG_total_down_before,CAG_total_down_after )
+
+print("codon", "\t", "up_before","\t", "up_after","\t",  "down_before","\t",  "down_after")
+
+for item in table:   
+    ub = round(100*(up_before_count[item]/CAG_total_up_before), 2)
+    ua = round(100*(up_after_count[item]/CAG_total_up_after), 2)
+    db = round(100*(down_before_count[item]/CAG_total_down_before), 2)
+    da = round(100*(down_after_count[item]/CAG_total_down_after), 2)
+    
+    print(item,"\t",  ub,"\t", ua ,"\t", db ,"\t", da )
     
     
- #   print(item, up_before_count[item], up_after_count[item], down_before_count[item], down_after_count[item])
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

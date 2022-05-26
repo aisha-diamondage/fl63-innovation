@@ -38,6 +38,8 @@ print(sort_by)
 
 files = glob.glob(where+"/output/contrasts/*.csv")
 
+files
+
 d = {}
 nucs = []
 accessions = []

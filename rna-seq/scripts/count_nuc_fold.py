@@ -38,9 +38,6 @@ print(sort_by)
 
 files = glob.glob(where+"/*.csv")
 
-files
-
-
 d = {}
 nucs = []
 accessions = []

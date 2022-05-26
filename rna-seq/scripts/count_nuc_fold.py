@@ -5,6 +5,9 @@ Created on Wed May 25 12:32:55 2022
 
 @author: aisha
 """
+import sys
+
+sys.path.append("/Library/Frameworks/Python.framework/Versions/3.9/bin/python3")
 
 import csv
 import glob

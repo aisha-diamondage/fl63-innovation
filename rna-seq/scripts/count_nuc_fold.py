@@ -39,7 +39,7 @@ print(sort_by)
 
 from pathlib import Path
 
-csv_test = Path(__file__).parents[1] / 'GarretBurhennData/Garret_Burhenn_Pitches.csv'
+csv_test = Path(__file__) / 'set1/*.csv'
 
 csv_test 
 

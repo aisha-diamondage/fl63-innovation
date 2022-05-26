@@ -38,8 +38,6 @@ print(sort_by)
 
 files = glob.glob(where+"_csv/*.csv")
 
-files
-
 d = {}
 nucs = []
 accessions = []
@@ -102,17 +100,13 @@ st.pyplot()
 
 
 
-'''
 
-print("fetching fasta records")
 #if os.path.exists("seqs.fa"):
  #   os.remove("seqs.fa")
 handle = Entrez.efetch(db="nuccore", id= accessions, rettype="fasta_cds_na", retmode="text")
 records = SeqIO.parse(handle, "fasta")
 for record in records:
     d["_".join(record.id.split("|")[1].split("_")[:2])] = record.description.split(" ")[1].split("=")[1].strip("]")
-    
-    
     code = [record.seq[i:i+3] for i in range(0, len(record.seq), 3)]
     #print(code)
     for nuc in nucs: 
@@ -122,5 +116,3 @@ for record in records:
             print(nuc, 0)
 #SeqIO.write(records, "seqs.fa", "fasta")
 
-print (nucs)
-'''

@@ -40,9 +40,9 @@ files = glob.glob(where+"/output/contrasts/*.csv")
 
 files
 
-test = csv.reader("set1/AlaAGC vs Vector.csv")
-for line in test:
-    line
+with open("set1/AlaAGC vs Vector.csv") as f:
+    for line in f:
+        line
 
 d = {}
 nucs = []

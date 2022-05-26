@@ -36,10 +36,14 @@ print(sort_by)
 #sort_by = "degree"
 #sort_by = "cardinality"
 
-files = glob.glob(where+"/*.csv")
+files_inno = glob.glob(where+"_innovation/*.csv")
 
-files 
+files_inno 
 
+
+files_rna-seq = glob.glob(where+"_rna-seq/*.csv")
+
+files_rna-seq 
 
 d = {}
 nucs = []

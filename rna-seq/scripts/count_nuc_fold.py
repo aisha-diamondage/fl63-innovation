@@ -36,7 +36,7 @@ print(sort_by)
 #sort_by = "degree"
 #sort_by = "cardinality"
 
-files = glob.glob(where+"/*.csv")
+files = glob.glob(where+"/output/contrasts/*.csv")
 
 d = {}
 nucs = []

@@ -40,7 +40,8 @@ files = glob.glob(where+"/output/contrasts/*.csv")
 
 files
 
-os.path
+test = csv.reader("set1/AlaAGC vs Vector.csv")
+test 
 
 d = {}
 nucs = []

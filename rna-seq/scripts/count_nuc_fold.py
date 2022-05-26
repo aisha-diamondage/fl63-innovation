@@ -5,9 +5,6 @@ Created on Wed May 25 12:32:55 2022
 
 @author: aisha
 """
-import sys
-
-sys.path.append("/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/")
 
 import csv
 import glob
@@ -38,7 +35,9 @@ print(sort_by)
 #sort_by = "degree"
 #sort_by = "cardinality"
 
-files = glob.glob("../"+where+"/output/contrasts/*.csv")
+files = glob.glob(where+"/*.csv")
+
+files
 
 d = {}
 nucs = []

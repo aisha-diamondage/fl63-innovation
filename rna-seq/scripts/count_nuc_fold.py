@@ -16,6 +16,8 @@ from Bio import Seq
 Entrez.email = 'aisha@diamondage.com'
 
 
+st.title("Upset Plots")
+
 
 where = st.selectbox("Set", ["set1", "set2"])
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
@@ -36,7 +38,7 @@ print(sort_by)
 #sort_by = "cardinality"
 
 files = glob.glob(where+"/*.csv")
-
+where
 files
 
 d = {}

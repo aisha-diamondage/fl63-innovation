@@ -15,9 +15,8 @@ from Bio import Entrez
 from Bio import Seq
 Entrez.email = 'aisha@diamondage.com'
 
-
-st.title("Upset Plots")
-
+st.title("RNA-Seq Upset Plots")
+st.subheader("This apps shows data from differential analysis of RNA-Seq sample vs vector")
 
 where = st.selectbox("Set", ["set1", "set2"])
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
@@ -37,15 +36,11 @@ print(sort_by)
 #sort_by = "degree"
 #sort_by = "cardinality"
 
-from pathlib import Path
+files = glob.glob(where+"/output/contrasts/*.csv")
 
-csv_test = Path(__file__) / 'set1/*.csv'
-
-csv_test 
-
-files = glob.glob(Path(__file__) / 'set1/*.csv')
-where
 files
+
+os.path
 
 d = {}
 nucs = []

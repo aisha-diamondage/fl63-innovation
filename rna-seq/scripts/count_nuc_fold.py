@@ -24,7 +24,7 @@ logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1)
 baseMean_cutoff = st.number_input("baseMean cutoff", value = 0)
 sort_by = st.radio("Sort by", ["degree", "cardinality"])
-
+orientation = st.radio("Orientation", ["vertical", "horizontal"])
 print(sort_by)
 
 #where = "set2"
@@ -92,7 +92,7 @@ from matplotlib import pyplot
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 upset = from_contents(d)
-fig = plot(upset, show_counts=True, orientation= "vertical", sort_by= sort_by )
+fig = plot(upset, show_counts=True, orientation= orientation, sort_by= sort_by )
 
 st.pyplot()
 

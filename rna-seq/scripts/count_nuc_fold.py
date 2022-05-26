@@ -40,10 +40,6 @@ files = glob.glob(where+"/*.csv")
 
 files
 
-with open("set1/AlaAGC vs Vector.csv") as f:
-    reader = csv.reader(f)
-    for line in reader:
-        line
 
 d = {}
 nucs = []

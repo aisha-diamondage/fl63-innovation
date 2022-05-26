@@ -43,7 +43,7 @@ csv_test = Path(__file__) / 'set1/*.csv'
 
 csv_test 
 
-files = glob.glob(where+"/*.csv")
+files = glob.glob(Path(__file__) / 'set1/*.csv')
 where
 files
 

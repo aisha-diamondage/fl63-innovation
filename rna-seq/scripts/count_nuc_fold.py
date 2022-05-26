@@ -40,7 +40,7 @@ files = glob.glob(where+"/output/contrasts/*.csv")
 
 files
 
-with open("set1/AlaAGC vs Vector.csv") as f:
+with open("/set1/AlaAGC vs Vector.csv") as f:
     reader = csv.reader(f)
     for line in reader:
         line

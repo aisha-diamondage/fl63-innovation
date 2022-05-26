@@ -145,7 +145,6 @@ dmypy.json
 *.DS_Store
 *.bam.*
 *.yml
-*.csv
 *.dot
 *.fasta
 

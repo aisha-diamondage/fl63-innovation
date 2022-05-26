@@ -1,0 +1,38 @@
+/* Diamond Age colors */
+/* gold = #ae9331 */
+/* green = #1b5b00 */
+
+body, p {
+  font-family: "Calibri";
+  font-size: 14px;
+  color: #333333; /* text. Diamond Age not-quite-black */
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: "Marcellus";
+  color: #1b5b00; /*#265C2D;*/
+}
+
+.email {
+  color: #ae93311;
+}
+
+.list-group-item{
+  font-family: "Marcellus";
+}
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #ae9331;
+}
+
+.btn-rcode {
+    background-color: #ae9331;
+    color: white;
+}
+
+/* fixes indent on wrapping headers but break indent for level 3 headers
+.tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 2em;
+}
+*/

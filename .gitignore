@@ -148,3 +148,46 @@ dmypy.json
 *.csv
 *.dot
 *.fasta
+
+
+
+
+## Files that aisha don't want
+cag_count*
+pdcub*
+riboseq*
+*.png
+*.RDS
+*.xlsx
+*.R
+*.pptx
+supply_dem*
+
+### R ###
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+*.html
+*.pdf
+

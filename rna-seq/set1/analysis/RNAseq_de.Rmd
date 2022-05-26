@@ -1,0 +1,411 @@
+---
+title: "RNAseq <br> Differential Expression"
+author: "Aisha Aljanahi (aisha@diamondage.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    collapsed: true
+    highlight: haddock
+    keep_md: false
+    theme: cerulean
+    code_folding: hide
+    toc: true
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+    css: ../css/DAstyle.css
+---
+
+```{css, echo=FALSE}
+body .main-container {
+  max-width: 95% !important;
+  width: 95% !important;
+}
+body {-
+  max-width: 95% !important;
+}
+```
+
+<img src="../css/Color-Landscape@0.5x.png" style="position:absolute;top:50px;right:0px;" />
+
+```{r}
+knitr::opts_chunk$set(echo           = TRUE,
+                      cache          = FALSE,
+                      error          = TRUE,
+                      fig.align      = "left",
+                      fig.width      = 8,
+                      fig.height     = 6,
+                      message        = FALSE,
+                      warning        = FALSE,
+                      output.dir     = "../output")
+
+```
+
+
+```{r setup}
+DOCNAME = "rnaseq_de"
+
+# libraries
+library(here)
+library(useful)
+library(knitr)
+library(kableExtra)
+library(DESeq2)
+library(plotly)
+library(pheatmap)
+library(ggrepel)
+library(umap)
+library(ggvenn)
+library(clusterProfiler)
+library(enrichplot)
+library(glue)
+library(viridis)
+library(DT)
+library(UpSetR)
+library(tidyverse)
+library(eulerr)
+library(ggpubr)
+
+
+```
+
+
+```{r}
+# directories
+baseDir = here("rna-seq")
+saveDir = here("rna-seq", "output")
+
+
+dir.create(saveDir, recursive = TRUE, showWarnings = F)
+
+## functions
+fp = file.path
+select = dplyr::select
+fe <- function(dir=saveDir,filename){
+  file.exists(fp(dir,filename))
+}
+
+saveDat <- function(dat, filename=NULL, csv=FALSE){
+  if(save){
+    if(is.null(filename)){filename = deparse(substitute(dat)) }
+    readr::write_rds(dat, path = paste0(saveDir, "/", filename, ".RDS"))
+    if(csv){
+      write.csv(dat, file = fp(paste0(saveDir, "/", filename, ".csv")))}}
+}
+
+make_res_tibble2 <- function(test, contrast= NULL, ens = FALSE, shrink = FALSE){
+  if(is.null(contrast)){
+    res <- results(test, parallel = T)
+    stat <- res$stat
+    if(shrink){
+      res <- lfcShrink(test, res = res, type = "ashr")
+    }
+  }else{
+    res <- results(test, contrast = contrast, parallel = T)
+    stat <- res$stat
+    if(shrink){
+      res <- lfcShrink(test, res = res, type = "ashr")
+    }
+  }
+  df <- tibble(symbol = rownames(res),
+               log2FC = res$log2FoldChange,
+               pvalue = res$pvalue,
+               padj = res$padj,
+               statistic=stat,
+               baseMean=res$baseMean)
+  df <- df %>% arrange(padj)
+  df <- df %>% mutate(padj = case_when(padj == 0 ~ min(df$padj), TRUE ~ padj))
+  if(ens){
+    df <- df %>% rename("ensembl"= "symbol")
+  }
+  return(df)
+}
+
+save = TRUE
+
+## figure theme
+theme_set(theme_bw(base_size = 14))
+
+## source functions
+source("../utilities/utilities.R")
+source("../utilities/rnaseq_de.R")
+
+```
+
+
+
+```{r}
+
+load_data <- function(fn){
+  read_rds(fp(saveDir, paste0(fn,".RDS")))
+}
+
+## load data
+
+###### SOME CHANGE IN THE WAY META FILE IS LOADED ######
+sample_meta <- read_csv("../data/meta.csv")
+sample_meta <- sample_meta %>%
+  mutate(nuc_seq = as.character(nuc_seq),
+         amino = as.character(amino))
+sample_meta[is.na(sample_meta)] <- "0"
+
+#sample_meta <- load_data("sample_meta")
+raw_counts <- load_data("raw_counts")
+dds <- load_data("dds")
+normalized_counts <- load_data("normalized_counts")
+gene_anno <- load_data("gene_anno")
+
+## added DESeq step
+
+```
+
+
+# Experimental Details
+
+
+In this report we will analyse RNA-seq data from the samples shown in the table below. 
+
+
+## Sample information
+
+The table below shows the detailed information for each sample (including ArgTCT_rep3, which is not used in this analysis.)
+
+
+```{r}
+
+#sample_meta %>% select(-fastq_1, -fastq_2) %>% downloadableDT()
+sample_meta %>% select(-Count, -LIB, -fastq_prefix) %>% downloadableDT()
+
+```
+
+
+```{r}
+
+if(file.exists(file.path(saveDir, "dds.RDS"))){
+  test <- read_rds(file.path(saveDir, "dds.RDS"))
+}else{
+  test <- DESeq(dds,  parallel = T)
+  saveDat(test)
+}
+
+#test <- DESeq(dds,  parallel = T)
+#test <- make_res_tibble2(test)
+
+```
+
+
+# Description of differential expression results
+
+
+The following results are generated:
+
+## Volcano Plot
+
+The volcano plots show us a summary view of the differential expression results. Each point on the plot represents one gene in the experiment. Spots are colored according to the following criteria:
+
+- **Blue**: pvalue < 0.05 & fold change < - 1.5
+- **Red**: pvalue < 0.05 & fold change > 1.5
+- **Grey**: pvalue > 0.05 & |fold change| < 1.5
+
+The y-axis position represents the -log p-value: a higher value indicates that the gene is more significant. 
+
+The x-axis position shows the log2(fold change) for the gene between the 200ng 20ng groups. 
+
+Two volcano plots are generated:
+
++ **Full Plot** shows all of the points from the DE analysis
++ **Zoomed In** limits the axes to give a closer view of the results. 
+
+## DE results table
+
+The table contains the DE results for all of the blue and red genes from the volcano plot. Click the "Download" button to view a version of the data in Excel. 
+
+Columns:
+
+- **symbol**: Gene symbol
+- **ensembl**: ENSEMBL gene ID
+- **log2FC**: log2 fold change
+- **pvalue**: Wald test p-value
+- **padj**: Benjamini-Hochberg corrected pvalue
+- **statistic**: Wald test statistic
+- **baseMean**: The base mean is the mean of normalized counts of all samples, normalizing for sequencing depth. This helps to get a sense for the absolute level of expression for a given gene.
+
+
+# Differential expression
+
+There seems to be a gene that's "siginificantly differenntiated" in many samples: NM_001313945 - Homo sapiens ras homolog family member A (RHOA), transcript variant 5, mRNA.
+
+```{r, results="hide", fig.show='hide'}
+
+
+comparisons <- read_csv("../data/contrasts.csv")
+
+#comparisons <- 
+ # comparisons %>%
+  #  separate(alpha, into =c("alpha_rev_seq", "alpha_sample", "alpha_amount"), remove = F) %>%
+   # separate(beta, into = c("beta_rev_seq", "beta_sample", "beta_amount"), remove = F) %>%
+    #mutate(name = glue("{beta_amount} {beta_sample} vs {alpha_amount} {alpha_sample}"))
+
+comparisons <- 
+  comparisons %>%
+    separate(alpha, into =c("alpha_cond"), remove = F) %>%
+    separate(beta, into = c("beta_cond"), remove = F) %>%
+    mutate(name = glue("{beta_cond} vs {alpha_cond}"))
+
+saveDat(comparisons)
+
+
+make_contrasts <- function(test, condition, beta, alpha){
+  dir.create(fp(saveDir, "contrasts"), recursive = TRUE, showWarnings = FALSE)
+  beta <- as.character(beta)
+  alpha <- as.character(alpha)
+  name <- paste0(beta," vs ",alpha)
+  filename <- paste0("/contrasts/", name)
+  
+  if(fe(paste0(saveDir,filename, ".RDS"))){
+    res <- read_rds(paste0(saveDir,filename, ".RDS"))
+  }else{
+    res <- make_res_tibble(test, condition, beta, alpha)
+    #res <- lfcShrink(test, res = res, type = "ashr")
+    #res <- make_res_tibble2(test, contrast = c(condition, beta , alpha), shrink = TRUE)
+    saveDat(res, filename = paste0("contrasts/",name), csv = T)
+  }
+  return(res)
+}
+
+
+all_contrasts <- sapply(comparisons$name, function(x){
+  dat <- comparisons %>% filter(name == x)
+  make_contrasts(test, "condition", dat$beta, dat$alpha)}, simplify = F, USE.NAMES = T  )
+
+
+all_contrasts <- lapply(all_contrasts, function(x){
+  dat <- x %>% rename("target_id"=symbol)
+  dat <- left_join(dat, gene_anno)
+  dat <- dat %>% rename("symbol"=target_id) %>% select(symbol, everything())
+  return(dat)
+})
+
+
+# all_contrasts <- lapply(degs, function(x) make_res_tibble(x))
+
+saveDat(all_contrasts)
+```
+
+
+
+
+
+```{r, results="hide", fig.show='hide'}
+## generate heatmaps for DE contrasts
+mat_anno <- sample_meta %>% 
+  select(rev_seq, amino, nuc_seq, sample) %>%
+  mutate(across(c(amino, nuc_seq), ~ as.character(.x))) %>%
+  column_to_rownames("sample")
+mat_anno[is.na(mat_anno)] <- 0
+
+anno_colors <- list(amino = set_names(gg_color_hue(length(unique(mat_anno$amino))),nm = unique(mat_anno$amino)),
+                    nuc_seq =  set_names(viridis(length(unique(mat_anno$nuc_seq))), nm = unique(mat_anno$nuc_seq)))
+
+normalized_counts <- cbind(rownames(normalized_counts), data.frame(normalized_counts, row.names=NULL))
+colnames(normalized_counts)[1] <- "gene_id"
+
+counts <- left_join(normalized_counts %>% as.data.frame() %>% rownames_to_column("target_id"), gene_anno) %>% select(-target_id) %>% as_tibble()
+
+
+
+
+
+library(data.table)
+counts <- as.data.table(counts)
+counts <- counts[,lapply(.SD, sum), by=.(gene_id)]
+counts <- as_tibble(counts)
+counts <- counts %>% filter(!is.na(gene_id))
+
+
+comp <- comparisons[1,]
+
+exp_dat <- counts %>% select(matches(comp$alpha), matches(comp$beta))
+
+#de_heatmaps_up <- sapply(comparisons$name, function(x){
+ # samples <- comparisons %>% filter(name == x)
+  #top_de_heatmap(all_contrasts[[x]], 
+   #              exp_dat=counts %>% select(matches(samples$alpha), matches(samples$beta), gene_id) %>% column_to_rownames("gene_id"), 
+    #             num_genes=50, 
+     #            cluster_cols=T, 
+      #           cluster_rows = T)
+#  }, simplify = F, USE.NAMES = T)
+
+
+```
+
+```{r eval=FALSE, fig.show='hide', include=FALSE, results="hide"}
+de_heatmaps_down <- sapply(comparisons$name, function(x){
+  samples <- comparisons %>% filter(name == x)
+  top_de_heatmap(all_contrasts[[x]], 
+                 exp_dat=counts %>% select(matches(samples$alpha), matches(samples$beta), gene_name) %>% column_to_rownames("gene_name"), 
+                 num_genes=50, 
+                 direction='down',
+                 cluster_cols=T, 
+                 cluster_rows = T)
+  }, simplify = F, USE.NAMES = T)
+
+```
+
+
+
+
+
+
+
+
+```{r knit_de_results, results="hide"}
+src_list <- lapply(names(all_contrasts), function(name) {
+    src <- c("## {{name}}",
+             "### Volcano Plot {.tabset}",
+             "#### Full Plot",
+             "```{r}",
+             "plot_volcano(all_contrasts[['{{name}}']])",
+             "```",
+             "",
+             "### Differentially Expressed Genes {.tabset}",
+             "#### Table",
+             "```{r}",
+             "display_de_genes(all_contrasts[['{{name}}']])",
+          
+             "```",
+             ""
+             )
+    knit_expand(text = src)
+})
+opts_knit$set(output.dir = getwd()) 
+out <- knit_child(text = unlist(src_list), options = list(cache = FALSE, fig.height = 8))
+
+```
+
+`r out`
+
+# R session info
+
+<button class="btn btn-rcode" data-toggle="collapse" data-target="#BlockName"> Show/Hide R Session Details </button>  
+<div id="BlockName" class="collapse">  
+
+
+```{r session info}
+sess <- devtools::session_info()
+sess$platform
+
+downloadableDT(as.data.frame(sess$packages) %>% select(-path, -loadedpath, -library, -md5ok), caption ="Package versions", filter="bottom", pageLength = 10)
+```
+
+</div>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,358 @@
+---
+title: "RNAseq"
+author: "Aisha Aljanahi (aisha@diamondage.com)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    collapsed: true
+    highlight: haddock
+    keep_md: false
+    theme: cerulean
+    code_folding: hide
+    toc: true
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+    css: ../css/DAstyle.css
+---
+
+```{css, echo=FALSE}
+body .main-container {
+  max-width: 95% !important;
+  width: 95% !important;
+}
+body {-
+  max-width: 95% !important;
+}
+```
+
+<img src="../css/Color-Landscape@0.5x.png" style="position:absolute;top:50px;right:0px;" />
+
+```{r}
+knitr::opts_chunk$set(echo           = TRUE,
+                      cache          = FALSE,
+                      error          = TRUE,
+                      fig.align      = "left",
+                      fig.width      = 8,
+                      fig.height     = 6,
+                      message        = FALSE,
+                      warning        = FALSE)
+
+```
+
+
+```{r setup}
+DOCNAME = "rna-seq"
+
+# libraries
+library(here)
+library(useful)
+library(knitr)
+library(kableExtra)
+library(DESeq2)
+library(plotly)
+library(pheatmap)
+library(ggrepel)
+library(umap)
+library(ggvenn)
+library(clusterProfiler)
+library(enrichplot)
+library(DT)
+library(tidyverse)
+library(dendsort)
+
+# directories
+baseDir = here("rna-seq", "set2")
+saveDir = here("rna-seq","set2", "output")
+
+#baseDir = "."
+#saveDir = here("output")
+
+dir.create(saveDir, recursive = TRUE, showWarnings = F)
+
+## functions
+fp = file.path
+select = dplyr::select
+fe <- function(dir=saveDir,filename){
+  file.exists(fp(dir,filename))
+}
+
+saveDat <- function(dat, filename=NULL, csv=FALSE){
+  if(save){
+    if(is.null(filename)){filename = deparse(substitute(dat)) }
+    readr::write_rds(dat, path = paste0(saveDir, "/", filename, ".RDS"))
+    if(csv){
+      write.csv(dat, file = fp(paste0(saveDir, "/", filename, ".csv")))}}
+}
+
+save = TRUE
+
+theme_set(theme_bw(base_size = 14))
+```
+
+
+```{r}
+
+source("../utilities/utilities.R")
+source("../utilities/rnaseq_de.R")
+```
+
+
+
+
+
+```{r}
+
+sample_meta <- read_csv("../data/meta.csv")
+sample_meta <- sample_meta %>%
+         mutate(amino = as.character(amino),
+         nuc_seq = as.character(nuc_seq),
+         rev_seq = as.character(rev_seq))
+sample_meta[is.na(sample_meta)] <- "0"
+
+
+## load data
+raw_counts <- read_csv("../data/counts/set2_NGS114_RNAseq_data.csv")
+raw_counts <- raw_counts %>% column_to_rownames("target_id")
+
+#gene_anno <- tibble(target_id = rownames(raw_counts), gene_name = raw_counts$gene_name)
+
+raw_counts <- raw_counts %>%
+  mutate(across(where(is.numeric), ~ round(.x, 0)))
+#raw_counts <- as.matrix(raw_counts %>% select(-gene_name))
+raw_counts <- raw_counts[,sample_meta$sample]
+
+
+#tpm <- read_tsv("../data/counts/salmon.merged.gene_tpm.tsv")
+#tpm <- tpm %>% column_to_rownames("target_id")
+
+gene_anno <- tibble(target_id = rownames(raw_counts), gene_name = raw_counts$target_id)
+
+dds <- DESeqDataSetFromMatrix(raw_counts,
+                              sample_meta %>% column_to_rownames("sample"),
+                              design = ~ condition)
+
+dds <- estimateSizeFactors(dds)
+
+normalized_counts <- counts(dds, normalized=TRUE)
+vsd <- vst(dds, blind = F)
+
+dds <- DESeq(dds)
+
+saveDat(raw_counts)
+saveDat(dds)
+saveDat(normalized_counts)
+saveDat(vsd)
+saveDat(gene_anno)
+
+```
+# Experimental Details
+
+In this report we will analyse RNA-seq data from the samples shown in the table below. 
+
+# Sample Metadata
+
+```{r}
+#sample_meta %>% select(-fastq_1, -fastq_2) %>% downloadableDT()
+sample_meta %>% select(-Count, -LIB, -fastq_prefix) %>% downloadableDT()
+
+```
+
+
+
+
+# Quality Control
+
+
+## Distribution of counts {.tabset}
+
+Let's take a quick look at the distribution of counts for each sample. 
+
+### Detected genes
+
+```{r}
+
+# exp_genes <- rowSums(raw_counts) >0
+
+temp <- as.data.frame(raw_counts) %>% rownames_to_column() %>% filter(rowSums(raw_counts) > 1)  %>% pivot_longer(colnames(as.data.frame(raw_counts)))
+
+ggplot(data=temp, aes(x=name, y=log(value + 1), fill=name)) +
+  geom_violin(alpha=0.8, show.legend = F, trim = F) +
+  ylab("log(counts + 1)") +
+  xlab("") + theme_bw(base_size = 14) %+replace% theme(axis.text.x = element_text(angle = 90, hjust=1))
+
+```
+
+
+
+
+```{r eval=FALSE, fig.height=6, include=FALSE}
+
+
+#  ## Percent Mitochondrial Transcripts
+
+#  Here we can see the amount of mitochondrial genes in each sample. 
+
+
+mito_genes <- gene_anno$target_id[grep("^mt-", gene_anno$gene_name)]
+mito <- apply(raw_counts[mito_genes,], 2, sum)
+total <- apply(raw_counts, 2, sum)
+pmito <- mito / total
+
+mito_df <- tibble(sample = colnames(raw_counts),
+                  mito = mito,
+                  total = total,
+                  pct_mito = pmito)
+
+mito_df <- left_join(sample_meta, mito_df)
+
+ggplot(mito_df, aes(y=pct_mito * 100, x = sample, fill=sample)) + 
+  geom_bar(stat = "identity", position = "dodge", show.legend = F) +
+  ylab("estimated % mitochondrial genes") + 
+  xlab("Sample") +
+  theme_bw(base_size = 14) %+replace% theme(axis.text.x = element_text(angle = 90, hjust=1))
+
+```
+
+
+
+## Dimensionality Reduction
+
+### Principal theComponents Analysis {.tabset .pills}
+
+In these plots the sample point is indicated by the color.
+
+#### PC1 vs PC2
+
+
+
+```{r fig.height=6, fig.width=8}
+
+pca <- prcomp(t(assay(vsd)))
+
+pca_res <- left_join(sample_meta,
+                     as.data.frame.matrix(pca$x) %>% rownames_to_column("sample"),
+                     by="sample")
+
+pca_var <-pca$sdev^2/sum(pca$sdev^2)
+
+pca1 <- pca_res %>% ggplot(aes(x=PC1, y=PC2, color=condition, label=sample)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1 (percent variance explained ", round(pca_var[1],2) *100, "%)")) +
+  ylab(paste0("PC2 (percent variance explained ", round(pca_var[2],2) *100, "%)")) +
+  labs(color="amino")
+
+
+ggplotly(pca1, tooltip="sample")
+
+
+```
+
+
+
+
+#### PC1 vs PC3
+
+```{r pca_2}
+
+pca2 <- ggplot(data=pca_res, aes(x=PC1, y=PC3, color=condition, label=sample)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1 (percent variance explained ", round(pca_var[1],2) *100, "%)")) +
+  ylab(paste0("PC3 (percent variance explained ", round(pca_var[3],2) *100, "%)")) +
+  labs(color="Treatment")
+
+ggplotly(pca2, tooltip="sample")
+
+```
+
+
+
+#### PC2 vs PC3
+
+```{r pca_3}
+pca3 <- ggplot(data=pca_res, aes(x=PC2, y=PC3, color=condition, label=sample)) +
+  geom_point(size=3) +
+  xlab(paste0("PC2 (percent variance explained ", round(pca_var[2],2) *100, "%)")) +
+  ylab(paste0("PC3 (percent variance explained ", round(pca_var[3],2) *100, "%)")) +
+  labs(color="Treatment")
+
+ggplotly(pca3, tooltip="sample")
+
+```
+
+
+### UMAP 
+
+#### Elbow Plot
+
+I chose to use 5 PCs for the UMAP.
+
+
+```{r}
+
+df_variance <- data.frame(varexp = pca$sdev^2 / sum(pca$sdev^2), x = 1:length(pca$sdev))
+ggplot(df_variance, aes(y=varexp, x = x)) + 
+  geom_line() + 
+  geom_bar(alpha = 0.8, stat = "identity") +
+  ylab("% variance explained") +
+  xlab("PC")
+
+```
+
+
+
+#### UMAP plot
+
+
+```{r}
+
+set.seed(1000)
+
+umap_res <- umap(pca$x[,1:5])
+
+umap_df <- left_join(sample_meta,
+                     as.data.frame.matrix(umap_res$layout) %>% rownames_to_column("sample"),
+                     by="sample")
+
+p1 <- ggplot(umap_df, aes(x=V1, y=V2, color=condition, label=sample)) +
+  geom_point() +
+  xlab("UMAP 1") +
+  ylab("UMAP 2")
+
+
+ggplotly(p1, tooltip = "sample")
+
+
+```
+
+
+
+
+## Sample-Sample Correlation
+
+Here, we showcase the correlation between all of the samples. 
+
+```{r heatmaps, fig.height=10, fig.width=12}
+
+# mat_vsd <- cor(assay(vsd)[,-which(colnames(normalized_counts) %in% c("Pred_AAV5-hA1AT-2h_R9", "Pred_AAV5-hA1AT-2h_R2"))])
+mat_vsd <- cor(assay(vsd))
+mat_anno <- sample_meta %>% 
+  select(nuc_seq, amino, rev_seq, sample) %>%
+  mutate(across(c(nuc_seq, amino), ~ as.character(.x))) %>%
+  column_to_rownames("sample")
+
+require(dendsort)
+sort_hclust <- function(...) as.hclust(dendsort(as.dendrogram(...), isReverse = TRUE))
+mat_cluster_cols <- sort_hclust(hclust(dist(t(mat_vsd))))
+mat_cluster_rows <- sort_hclust(hclust(dist(mat_vsd)))
+
+pheatmap(mat_vsd,
+         main="Correlations of VST-transformed read counts",
+         fontsize_row = 6,
+         fontsize_col = 6,color = viridis::viridis(20),
+         annotation_col = mat_anno,
+         # annotation_colors = anno_colors,
+         border_color = NA)
+
+
+```

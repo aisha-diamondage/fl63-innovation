@@ -41,9 +41,9 @@ files_inno = glob.glob(where+"_innovation/*.csv")
 files_inno 
 
 
-files_rna-seq = glob.glob(where+"_rna-seq/*.csv")
+files = glob.glob(where + "_rna-seq/*.csv")
 
-files_rna-seq 
+files 
 
 d = {}
 nucs = []

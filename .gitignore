@@ -133,7 +133,6 @@ dmypy.json
 
 # data
 *.zip
-*.txt
 *.gz
 *.json
 *.sf

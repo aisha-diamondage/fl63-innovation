@@ -101,15 +101,10 @@ st.pyplot()
 
 ""
 ""
-st.subheader("The genes that pass this filter have the following nuc counts:")
+st.subheader("Table of all genes that pass this filter and their codon counts:")
 
-
-#gene_acc_list= [".", "."]
-#gene_list= ["sample", "reverse_nuc"]
 counts = {'sample':['accession'], 'gane_name':['rev_codon'] }
-#counts = {}
-#if os.path.exists("seqs.fa"):
- #   os.remove("seqs.fa")
+
 handle = Entrez.efetch(db="nuccore", id= accessions, rettype="fasta_cds_na", retmode="text")
 records = SeqIO.parse(handle, "fasta")
 for record in records:
@@ -118,40 +113,24 @@ for record in records:
     code = [record.seq[i:i+3] for i in range(0, len(record.seq), 3)]
     counts['sample'].append(gene_acc)
     counts['gane_name'].append(gene_name)
-    
-    #gene_acc_list.append(gene_acc)
-    #print(gene_acc)
+ 
     for sample in d:
         if sample.startswith("Mock") or sample.startswith("Vector") or sample.startswith("iMet"):
-            #print(sample, sample, gene_acc in d[sample], gene_name, 0)
             if sample in counts:
                 counts[sample].append(0)
-                #counts[sample] = counts[sample] + [gene_acc in d[sample], 0]
             else: 
                 counts[sample] = [sample, 0]
             
         else:
             nuc = sample[-3:]
-            #print(sample, rev_compl(nuc), gene_name, gene_acc in d[sample], code.count(rev_compl(nuc)))
             if sample in counts:
                 counts[sample].append(code.count(rev_compl(nuc)))
-                #counts[sample] = counts[sample] + [gene_acc in d[sample], code.count(rev_compl(nuc))]
             else: 
                 counts[sample] = [rev_compl(nuc), code.count(rev_compl(nuc)) ]
             
             
-            
-            #print(gene_acc, d[sample])
-   # for nuc in nucs: 
-    #    try:
-    #        print(nuc, rev_compl(nuc), code.count(rev_compl(nuc)))
-     #   except KeyError:
-      #      print(nuc, 0)
-#SeqIO.write(records, "seqs.fa", "fasta")
 
 transpose = st.checkbox("Transpose")
-#for item in counts:
- #   print(len(counts[item]))
 df = pd.DataFrame.from_dict(counts).astype(str)
 df = df.set_index('sample')
 if transpose:    

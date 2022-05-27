@@ -14,6 +14,7 @@ from Bio import SeqIO
 from Bio import Entrez
 from Bio import Seq
 Entrez.email = 'aisha@diamondage.com'
+import pandas as pd
 
 st.title("RNA-Seq Upset Plots")
 st.subheader("This apps shows data from differential analysis of RNA-Seq sample vs vector")
@@ -22,10 +23,10 @@ where = st.selectbox("Set", ["set1", "set2"])
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
 logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1)
-baseMean_cutoff = st.number_input("baseMean cutoff", value = 0)
+baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 sort_by = st.radio("Sort by", ["degree", "cardinality"])
 orientation = st.radio("Orientation", ["vertical", "horizontal"])
-print(sort_by)
+
 
 #where = "set2"
 #pval_cutoff = 0.05
@@ -36,7 +37,11 @@ print(sort_by)
 #sort_by = "degree"
 #sort_by = "cardinality"
 
-files = glob.glob(where+"_csv/*.csv")
+#cloud dev
+#files = glob.glob(where+"_csv/*.csv")
+
+#local dev
+files = glob.glob("../"+where+"/output/contrasts/*.csv")
 
 d = {}
 nucs = []
@@ -52,11 +57,11 @@ for file in files:
     name = os.path.basename(file).split(" ")[0]
     #print(name)
     d[name]=[]
-    if name.startswith("Mock") or name.startswith("Vector") or name.startswith("iMet"):
-        nucs.append(name)
-    else:
-        nuc = name[-3:]
-        nucs.append(nuc)
+    #if name.startswith("Mock") or name.startswith("Vector") or name.startswith("iMet"):
+     #   nucs.append(name)
+    #else:
+     #   nuc = name[-3:]
+      #  nucs.append(nuc)
     
     with open(file) as f:
         reader = csv.reader(f)
@@ -83,8 +88,6 @@ for file in files:
                              
 accessions = set(accessions)
 
-
-
 ### upset plots
 from upsetplot import from_contents
 from upsetplot import plot
@@ -96,23 +99,81 @@ fig = plot(upset, show_counts=True, orientation= orientation, sort_by= sort_by )
 
 st.pyplot()
 
+""
+""
+st.subheader("The genes that pass this filter have the following nuc counts:")
 
 
-
-
-
+#gene_acc_list= [".", "."]
+#gene_list= ["sample", "reverse_nuc"]
+counts = {'sample':['accession'], 'gane_name':['rev_codon'] }
+#counts = {}
 #if os.path.exists("seqs.fa"):
  #   os.remove("seqs.fa")
-#handle = Entrez.efetch(db="nuccore", id= accessions, rettype="fasta_cds_na", retmode="text")
-#records = SeqIO.parse(handle, "fasta")
-#for record in records:
- #   d["_".join(record.id.split("|")[1].split("_")[:2])] = record.description.split(" ")[1].split("=")[1].strip("]")
-  #  code = [record.seq[i:i+3] for i in range(0, len(record.seq), 3)]
-    #print(code)
-#    for nuc in nucs: 
- #       try:
-  #          print(nuc, rev_compl(nuc), code.count(rev_compl(nuc)))
-   #     except KeyError:
-    #        print(nuc, 0)
+handle = Entrez.efetch(db="nuccore", id= accessions, rettype="fasta_cds_na", retmode="text")
+records = SeqIO.parse(handle, "fasta")
+for record in records:
+    gene_acc = ["_".join(record.id.split("|")[1].split("_")[:2])][0]
+    gene_name = record.description.split(" ")[1].split("=")[1].strip("]")
+    code = [record.seq[i:i+3] for i in range(0, len(record.seq), 3)]
+    counts['sample'].append(gene_acc)
+    counts['gane_name'].append(gene_name)
+    
+    #gene_acc_list.append(gene_acc)
+    #print(gene_acc)
+    for sample in d:
+        if sample.startswith("Mock") or sample.startswith("Vector") or sample.startswith("iMet"):
+            #print(sample, sample, gene_acc in d[sample], gene_name, 0)
+            if sample in counts:
+                counts[sample].append(0)
+                #counts[sample] = counts[sample] + [gene_acc in d[sample], 0]
+            else: 
+                counts[sample] = [sample, 0]
+            
+        else:
+            nuc = sample[-3:]
+            #print(sample, rev_compl(nuc), gene_name, gene_acc in d[sample], code.count(rev_compl(nuc)))
+            if sample in counts:
+                counts[sample].append(code.count(rev_compl(nuc)))
+                #counts[sample] = counts[sample] + [gene_acc in d[sample], code.count(rev_compl(nuc))]
+            else: 
+                counts[sample] = [rev_compl(nuc), code.count(rev_compl(nuc)) ]
+            
+            
+            
+            #print(gene_acc, d[sample])
+   # for nuc in nucs: 
+    #    try:
+    #        print(nuc, rev_compl(nuc), code.count(rev_compl(nuc)))
+     #   except KeyError:
+      #      print(nuc, 0)
 #SeqIO.write(records, "seqs.fa", "fasta")
+
+transpose = st.checkbox("Transpose")
+#for item in counts:
+ #   print(len(counts[item]))
+df = pd.DataFrame.from_dict(counts).astype(str)
+df = df.set_index('sample')
+if transpose:    
+    df = df.transpose()
+
+@st.cache
+def convert_df(df):
+   return df.to_csv().encode('utf-8')
+
+
+csv = convert_df(df)
+
+st.download_button(
+   "Press to Download",
+   csv,
+   where+".csv",
+   "text/csv",
+   key='download-csv'
+)
+
+    
+st.dataframe(df)
+
+
 

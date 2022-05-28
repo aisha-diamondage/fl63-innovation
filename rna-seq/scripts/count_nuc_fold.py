@@ -124,9 +124,9 @@ for record in records:
         else:
             nuc = sample[-3:]
             if sample in counts:
-                counts[sample].append(code.count(rev_compl(nuc))+"/"+sample in d[sample])
+                counts[sample].append(int(code.count(rev_compl(nuc)))+"/"+sample in d[sample])
             else: 
-                counts[sample] = [rev_compl(nuc), code.count(rev_compl(nuc))+"/"+sample in d[sample] ]
+                counts[sample] = [rev_compl(nuc), int(code.count(rev_compl(nuc)))+"/"+sample in d[sample] ]
             
             
 

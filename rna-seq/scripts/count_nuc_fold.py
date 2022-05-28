@@ -124,9 +124,9 @@ for record in records:
         else:
             nuc = sample[-3:]
             if sample in counts:
-                counts[sample].append("/".join([code.count(rev_compl(nuc)), sample in d[sample]]))
+                counts[sample].append("/".join([str(code.count(rev_compl(nuc))), sample in d[sample]]))
             else: 
-                counts[sample] = [rev_compl(nuc), "/".join([code.count(rev_compl(nuc)), sample in d[sample]])]
+                counts[sample] = [rev_compl(nuc), "/".join([str(code.count(rev_compl(nuc))), sample in d[sample]])]
             
             
 

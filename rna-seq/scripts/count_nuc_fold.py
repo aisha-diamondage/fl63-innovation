@@ -115,18 +115,23 @@ for record in records:
     counts['gane_name'].append(gene_name)
  
     for sample in d:
+        if gene_acc in d[sample]:
+            status = "T"
+        else:
+            status = "F"
+            
         if sample.startswith("Mock") or sample.startswith("Vector") or sample.startswith("iMet"):
             if sample in counts:
-                counts[sample].append("/".join(["0", sample in d[sample]]))
+                counts[sample].append("/".join(["0", status]))
             else: 
-                counts[sample] = [sample, "/".join(["0", sample in d[sample]])]
+                counts[sample] = [sample, "/".join(["0", status])]
             
         else:
             nuc = sample[-3:]
             if sample in counts:
-                counts[sample].append("/".join([str(code.count(rev_compl(nuc))), sample in d[sample]]))
+                counts[sample].append("/".join([str(code.count(rev_compl(nuc))), status]))
             else: 
-                counts[sample] = [rev_compl(nuc), "/".join([str(code.count(rev_compl(nuc))), sample in d[sample]])]
+                counts[sample] = [rev_compl(nuc), "/".join([str(code.count(rev_compl(nuc))), status])]
             
             
 

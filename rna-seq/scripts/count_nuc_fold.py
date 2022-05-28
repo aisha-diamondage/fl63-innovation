@@ -103,8 +103,8 @@ st.pyplot()
 ""
 st.subheader("Table of all genes that pass this filter:")
 
-st.write("The table shows the codon count in the CDS of the gene for all the codons included in this set. It also shows whether this gene passed the differential analysis filters for this specific sample.")
-st.write("Format: 3/T = codon_count/pass_DE_filters(true_or_false)")
+st.write("Each cell in the below table shows the codon count in the CDS of the gene. A TRUE or FALSE notation on whether this gene passed the differential analysis filters for this specific RNA-Seq sample vs Vector.")
+st.write("Cell format: 3/T = codon_count/True_or_False_Differentially_expressed")
 
 counts = {'sample':['accession'], 'gane_name':['rev_codon'] }
 

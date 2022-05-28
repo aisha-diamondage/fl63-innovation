@@ -117,16 +117,16 @@ for record in records:
     for sample in d:
         if sample.startswith("Mock") or sample.startswith("Vector") or sample.startswith("iMet"):
             if sample in counts:
-                counts[sample].append(0)
+                counts[sample].append("0"+"/"+sample in d[sample])
             else: 
-                counts[sample] = [sample, 0]
+                counts[sample] = [sample, "0"+"/"+sample in d[sample]]
             
         else:
             nuc = sample[-3:]
             if sample in counts:
-                counts[sample].append(code.count(rev_compl(nuc)))
+                counts[sample].append(code.count(rev_compl(nuc))+"/"+sample in d[sample])
             else: 
-                counts[sample] = [rev_compl(nuc), code.count(rev_compl(nuc)) ]
+                counts[sample] = [rev_compl(nuc), code.count(rev_compl(nuc))+"/"+sample in d[sample] ]
             
             
 

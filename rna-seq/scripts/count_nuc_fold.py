@@ -22,7 +22,7 @@ st.subheader("This apps shows data from differential analysis of RNA-Seq sample 
 where = st.selectbox("Set", ["set1", "set2"])
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
 logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
-pos_logfc = st.checkbox("Positive log2FC only")
+pos_logfc = st.checkbox("Positive log2FC only", value = True)
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1.0)
 baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 sort_by = st.radio("Sort by", ["degree", "cardinality"])

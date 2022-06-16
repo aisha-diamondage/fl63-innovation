@@ -280,4 +280,7 @@ st.download_button(
 enr.res2d
 
 st.image("gea.png")
+import os
+os.remove("gea.png")
+
 

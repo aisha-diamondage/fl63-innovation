@@ -16,6 +16,7 @@ from Bio import Seq
 Entrez.email = 'aisha@diamondage.com'
 import pandas as pd
 from statistics import geometric_mean
+import os
 
 st.title("stAI downstream analysis")
 st.subheader("This apps plots the correlation between stAI and codon counts in differentially expressed genes")
@@ -284,8 +285,9 @@ else:
 
     enr.res2d
     st.image("gea.png")
+    os.remove("gea.png")
     
-import os
-os.remove("gea.png")
+
+
 
 

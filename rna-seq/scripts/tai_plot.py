@@ -268,20 +268,21 @@ enr = gseapy.enrichr(gene_list=genes, gene_sets=GEA_select, no_plot=True)
 
 gseapy.plot.barplot(enr.results, column='Adjusted P-value', title='', ofname="gea")
         
-csv = convert_df(enr.res2d)
-st.download_button(
-   "Press to Download",
-   csv,
-   what+"_"+GEA_select+"_GEA.csv",
-   "text/csv",
-   key='download_GEA'
-)
 
-enr.res2d
 
 if enr.res2d.size == 0:
     "No significant enrichment"
 else:
+    csv = convert_df(enr.res2d)
+    st.download_button(
+       "Press to Download",
+       csv,
+       what+"_"+GEA_select+"_GEA.csv",
+       "text/csv",
+       key='download_GEA'
+    )
+
+    enr.res2d
     st.image("gea.png")
     
 import os

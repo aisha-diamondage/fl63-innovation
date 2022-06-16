@@ -39,12 +39,12 @@ baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 #pos_logfc = True
 
 #cloud dev
-#files = glob.glob("tai_data/DE/*.csv")
-#tai_file = "tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
+files = glob.glob("tai_data/DE/*.csv")
+tai_file = "tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
 
 #local dev
-files = glob.glob("../../tai_data/DE/*.csv")
-tai_file = "../../tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
+#files = glob.glob("../../tai_data/DE/*.csv")
+#tai_file = "../../tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
 
 
 d = {}

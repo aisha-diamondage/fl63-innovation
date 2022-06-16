@@ -1,2 +1,4 @@
 biopython
 upsetplot
+statistics
+gseapy

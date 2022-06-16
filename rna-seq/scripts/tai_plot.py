@@ -279,9 +279,11 @@ st.download_button(
 
 enr.res2d
 
-enr.res2d.size
-
-st.image("gea.png")
+if enr.res2d.size == 0:
+    "No significant enrichment"
+else:
+    st.image("gea.png")
+    
 import os
 os.remove("gea.png")
 

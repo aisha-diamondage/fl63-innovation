@@ -241,7 +241,6 @@ st.subheader("Gene enrichment analysis of all genes that pass the above set filt
 
 
 import gseapy
-from gseapy.plot import barplot
 #print( gseapy.get_library_name())
 
 GEA_select = st.selectbox("Select gene enrichment analysis database", ['ClinVar_2019' \

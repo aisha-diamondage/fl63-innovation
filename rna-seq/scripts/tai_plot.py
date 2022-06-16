@@ -279,7 +279,7 @@ st.download_button(
 
 enr.res2d
 
-print(enr.res2d.size)
+enr.res2d.size
 
 st.image("gea.png")
 import os

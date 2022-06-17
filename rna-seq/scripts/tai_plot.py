@@ -211,6 +211,17 @@ df.columns = df.iloc[0]
 df = df.drop(df.index[0])
 
 #print(df)
+"•	codonCount : Count of occurances of the above-selected codon in the CDS of the gene."
+"•	log2FC : FoldChange–The effect size estimate. This value indicates how much the gene or transcript's expression seems to have changed between the comparison and control groups. This value is reported on a logarithmic scale to base 2."
+"•	pvalue : P-value of the test for the gene or transcript."
+"•	padj : Adjusted P-value for multiple testing for the gene or transcript."
+"•	statistic : The value of the test statistic for the gene or transcript (Wald statistic)."
+"•	baseMean : The average of the normalized count values, dividing by size factors, taken over all samples."
+"•	stAI : Calculated by finding the geometric mean of the wi's of the codons that make up the CDS. The wi's were calculated using stAIcalc."
+"•	averageRawCount : Average RNA-Seq read count in the replicates of this sample."
+
+
+
 
 @st.cache
 def convert_df(df):

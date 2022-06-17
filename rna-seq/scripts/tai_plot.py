@@ -239,8 +239,8 @@ st.dataframe(df)
 st.subheader("Plots of all genes that pass the above set filters in "+ what + ":")
 
 
-x_select = st.selectbox("X-axis", ["codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI"])
-y_select = st.selectbox("Y-axis", ["stAI", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", ])
+x_select = st.selectbox("X-axis", ["codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI", "averageRawCount"])
+y_select = st.selectbox("Y-axis", ["stAI", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", "averageRawCount"])
 gene_label = st.checkbox("Gene label", value = True)
 
 

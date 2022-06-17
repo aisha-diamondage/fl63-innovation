@@ -16,14 +16,15 @@ from Bio import Seq
 Entrez.email = 'aisha@diamondage.com'
 import pandas as pd
 from statistics import geometric_mean
+from statistics import mean
 import os
 
 st.title("stAI downstream analysis")
 st.subheader("Selection of cut-offs for differentially exprressed genes")
              
 
-
-what = st.selectbox("Sample", ["AsnGTT-3", "GlyTCC-1", "TyrGTA-5", "LeuTAA-1", "ValAAC-2", "ValTAC-1", "ArgTCT-1", "AspGTC-1"])
+samples_of_interest = ["AsnGTT-3", "GlyTCC-1", "TyrGTA-5", "LeuTAA-1", "ValAAC-2", "ValTAC-1", "ArgTCT-1", "AspGTC-1"]
+what = st.selectbox("Sample", samples_of_interest)
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
 logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
 pos_logfc = st.checkbox("Positive log2FC only", value = True)
@@ -42,16 +43,18 @@ baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 #cloud dev
 files = glob.glob("tai_data/DE/*.csv")
 tai_file = "tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
+raw_counts = "tai_data/rawCounts/raw_counts.csv"
 
 #local dev
 #files = glob.glob("../../tai_data/DE/*.csv")
 #tai_file = "../../tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
+#raw_counts = "../../tai_data/rawCounts/raw_counts.csv"
 
 
 d = {}
 nucs = []
 accessions = []
-deseq =  {"accession":["symbol", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI"]}
+deseq =  {"accession":["symbol", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI", "averageRawCount"]}
 
 
 
@@ -121,6 +124,35 @@ with open(tai_file) as f:
         if i != 0:
             #print(line[0])
             wi[line[0]] = line[1] 
+            
+            
+###################
+# READ RAW COUNTS #
+###################
+
+raw={}
+dex=[]
+with open(raw_counts) as f:
+    reader = csv.reader(f)
+    for i, line in enumerate(reader):
+        if i == 0:
+            for item in line:
+                if item.startswith(what):
+                    #print(line.index(item))
+                    dex.append(line.index(item))
+                    #print(dex)
+                    
+        else:
+            #print(line[0])
+            if line[0] in accessions:
+                #print(line[0])
+                raw[line[0]]=[]
+                for index in dex:
+                    raw[line[0]].append(float(line[index]))
+                #print(raw)
+                    
+                    
+
 
 
 #######################################################
@@ -155,7 +187,10 @@ for record in records:
         for trip in code:
             stai_wi.append(float(wi[trip]))
         deseq[gene_acc].append(geometric_mean(stai_wi))
+        deseq[gene_acc].append(mean(raw[gene_acc]))
+        #make list of genes for plot annotation
         genes.append(gene_name)
+        
         #if gene_acc in list_to_test_tai_calc:
          #   print(gene_acc, geometric_mean(stai_wi))
         

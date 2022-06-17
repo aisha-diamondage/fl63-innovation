@@ -1,4 +1,0 @@
-Gene_set	Term	Overlap	P-value	Adjusted P-value	Old P-value	Old Adjusted P-value	Odds Ratio	Combined Score	Genes
-ClinVar_2019	thoracic aortic aneurysm and aortic dissection	1/10	0.0296046094730556	0.0444069142095834	0	0	37.53483992467044	132.1160756075347	LOX
-ClinVar_2019	mycobacterium tuberculosis, susceptibility to	1/10	0.0296046094730556	0.0444069142095834	0	0	37.53483992467044	132.1160756075347	SP110
-ClinVar_2019	diabetes mellitus type 2	1/28	0.0807368511574007	0.0807368511574007	0	0	12.500313873195228	31.45779193205892	HMGA1

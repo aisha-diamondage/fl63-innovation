@@ -19,7 +19,7 @@ from statistics import geometric_mean
 import os
 
 st.title("stAI downstream analysis")
-st.subheader("This apps plots the correlation between stAI and codon counts in differentially expressed genes")
+st.subheader("Selection of cut-offs for differentially exprressed genes")
              
 
 

@@ -285,6 +285,8 @@ st.pyplot()
 st.subheader("Gene enrichment analysis of all genes that pass the above set filters in "+ what + ":")
 
 
+st.write("The gene enrichment analysis is done using Enrichr. To learn more about Enrichr, click [here](https://maayanlab.cloud/Enrichr/)")
+
 
 import gseapy
 #print( gseapy.get_library_name())

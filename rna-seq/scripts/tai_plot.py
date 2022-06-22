@@ -282,7 +282,7 @@ st.subheader("Plots of all genes that pass the above set filters in "+ what + ":
 x_select = st.selectbox("X-axis", ["codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI", "averageRawCount"])
 y_select = st.selectbox("Y-axis", ["stAI", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", "averageRawCount"])
 gene_label = st.checkbox("Gene label", value = True)
-
+size = st.number_input("Font size", value = 10)
 
 #print(c)
 #print(df["log2FC"])
@@ -291,13 +291,15 @@ x = [float(item) for item in df[x_select].tolist()]
 y = [float(item) for item in df[y_select].tolist()]
 import matplotlib.pyplot as plt
 
+
+
 st.set_option('deprecation.showPyplotGlobalUse', False)
 fig = plt.scatter(x,y)
 plt.xlabel(x_select)
 plt.ylabel(y_select)
 if gene_label:
     for i, label in enumerate(df["symbol"].tolist()):
-        plt.annotate(label, (x[i], y[i]))
+        plt.annotate(label, (x[i], y[i]), fontsize=size)
 plt.show()
 
 st.pyplot()

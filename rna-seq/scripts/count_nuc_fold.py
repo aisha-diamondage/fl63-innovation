@@ -39,10 +39,10 @@ orientation = st.radio("Orientation", ["vertical", "horizontal"])
 #sort_by = "cardinality"
 
 #cloud dev
-files = glob.glob(where+"_csv/*.csv")
+files = glob.glob("count_data/"+where+"_csv/*.csv")
 
 #local dev
-#files = glob.glob("../"+where+"/output/contrasts/*.csv")
+#files = glob.glob("../count_data/"+where+"/output/contrasts/*.csv")
 
 d = {}
 nucs = []

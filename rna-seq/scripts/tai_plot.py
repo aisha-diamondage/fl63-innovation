@@ -112,7 +112,7 @@ for file in files:
                             except ValueError:
                                 "No significant DE genes."
                                 
-                        else:
+                        if which_logfc == "All significant":
                             if abs(float(line[log2fc_index])) >= logfc_cutoff:
                                 if float(line[pval_index]) <= pval_cutoff:
                                     if float(line[padj_index]) <= padj_cutoff:

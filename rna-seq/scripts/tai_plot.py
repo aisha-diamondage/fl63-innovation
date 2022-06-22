@@ -39,7 +39,8 @@ count_wobbles = st.checkbox("Count wobbles", value = True)
 #logfc_cutoff = 1.5
 #padj_cutoff = 1
 #baseMean_cutoff = 10
-#which_logfc = True
+#which_logfc = "All significant"
+#count_wobbles = True
 
 #cloud dev
 files = glob.glob("tai_data/DE/*.csv")
@@ -206,9 +207,11 @@ for record in records:
         deseq[gene_acc][0] = gene_name
         #print(nuc, rev_nuc, sample, wobble[nuc])
         codon_count = 0
-        for wobble_codon in wobble[nuc]: 
-            codon_count = codon_count + code.count(wobble_codon)
-
+        if count_wobbles:
+            for wobble_codon in wobble[nuc]: 
+                codon_count = codon_count + code.count(wobble_codon)
+        else:
+            codon_count = code.count(rev_nuc)
         deseq[gene_acc][1] = str(codon_count)
         for trip in code:
             stai_wi.append(float(wi[trip]))

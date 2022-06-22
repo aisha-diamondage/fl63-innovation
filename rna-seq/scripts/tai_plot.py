@@ -91,6 +91,28 @@ for file in files:
                     if "NA" in line:
                         continue
                     else:
+                        if abs(float(line[log2fc_index])) >= logfc_cutoff:
+                            if float(line[pval_index]) <= pval_cutoff:
+                                if float(line[padj_index]) <= padj_cutoff:
+                                    if float(line[baseMean_index]) >= baseMean_cutoff:
+                                        if which_logfc == "Positive only":
+                                            if float(line[log2fc_index]) >= logfc_cutoff:
+                                                d[name].append(line[1])
+                                                accessions.append(line[1])
+                                                deseq[line[1]] = line
+                                                
+                                        if which_logfc == "Negative only":
+                                            if float(line[log2fc_index]) <= -logfc_cutoff:
+                                                d[name].append(line[1])
+                                                accessions.append(line[1])
+                                                deseq[line[1]] = line
+                                            
+                                        if which_logfc == "All significant":
+                                            d[name].append(line[1])
+                                            accessions.append(line[1])
+                                            deseq[line[1]] = line
+                                        
+                        '''                
                         if which_logfc == "Positive only":
                             if float(line[log2fc_index]) >= logfc_cutoff:
                                 if float(line[pval_index]) <= pval_cutoff:
@@ -112,16 +134,9 @@ for file in files:
                             except ValueError:
                                 "No significant DE genes."
                                 
-                        if which_logfc == "All significant":
-                            if abs(float(line[log2fc_index])) >= logfc_cutoff:
-                                if float(line[pval_index]) <= pval_cutoff:
-                                    if float(line[padj_index]) <= padj_cutoff:
-                                        if float(line[baseMean_index]) >= baseMean_cutoff:
-                                            #print(line)
-                                            d[name].append(line[1])
-                                            accessions.append(line[1])
-                                            deseq[line[1]] = line
-       
+                        
+                            
+                        '''
                              
 accessions = set(accessions)
 

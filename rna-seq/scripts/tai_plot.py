@@ -27,7 +27,7 @@ samples_of_interest = ["AsnGTT-3", "GlyTCC-1", "TyrGTA-5", "LeuTAA-1", "ValAAC-2
 what = st.selectbox("Sample", samples_of_interest)
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
 logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
-pos_logfc = st.checkbox("Positive log2FC only", value = True)
+which_logfc = st.selectbox("Positive log2FC", ["All significant", "Positive only", "Negative only"])
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1.0)
 baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 
@@ -38,7 +38,7 @@ baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 #logfc_cutoff = 1.5
 #padj_cutoff = 1
 #baseMean_cutoff = 10
-#pos_logfc = True
+#which_logfc = True
 
 #cloud dev
 files = glob.glob("tai_data/DE/*.csv")
@@ -91,7 +91,16 @@ for file in files:
                     if "NA" in line:
                         continue
                     else:
-                        if pos_logfc:
+                        if which_logfc == "Positive only":
+                            if float(line[log2fc_index]) >= logfc_cutoff:
+                                if float(line[pval_index]) <= pval_cutoff:
+                                    if float(line[padj_index]) <= padj_cutoff:
+                                        if float(line[baseMean_index]) >= baseMean_cutoff:
+                                            d[name].append(line[1])
+                                            accessions.append(line[1])
+                                            deseq[line[1]] = line
+                                            
+                        if which_logfc == "Negative only":
                             if float(line[log2fc_index]) >= logfc_cutoff:
                                 if float(line[pval_index]) <= pval_cutoff:
                                     if float(line[padj_index]) <= padj_cutoff:

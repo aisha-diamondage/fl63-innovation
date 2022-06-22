@@ -326,7 +326,7 @@ gseapy.plot.barplot(enr.results, column='Adjusted P-value', title='', ofname="ge
 
 
 if enr.res2d.size == 0:
-    "No enrichment found"
+    st.warning("No enrichment found")
 else:
     csv = convert_df(enr.res2d)
     st.download_button(
@@ -342,7 +342,7 @@ else:
         st.image("gea.png")
         os.remove("gea.png")
     except FileNotFoundError:
-        "No significant enrichment"
+        st.warning("No significant enrichment")
     
     
 

@@ -111,32 +111,7 @@ for file in files:
                                             d[name].append(line[1])
                                             accessions.append(line[1])
                                             deseq[line[1]] = line
-                                        
-                        '''                
-                        if which_logfc == "Positive only":
-                            if float(line[log2fc_index]) >= logfc_cutoff:
-                                if float(line[pval_index]) <= pval_cutoff:
-                                    if float(line[padj_index]) <= padj_cutoff:
-                                        if float(line[baseMean_index]) >= baseMean_cutoff:
-                                            d[name].append(line[1])
-                                            accessions.append(line[1])
-                                            deseq[line[1]] = line
-                                            
-                        if which_logfc == "Negative only":
-                            try:
-                                if float(line[log2fc_index]) <= -logfc_cutoff:
-                                    if float(line[pval_index]) <= pval_cutoff:
-                                        if float(line[padj_index]) <= padj_cutoff:
-                                            if float(line[baseMean_index]) >= baseMean_cutoff:
-                                                d[name].append(line[1])
-                                                accessions.append(line[1])
-                                                deseq[line[1]] = line
-                            except ValueError:
-                                "No significant DE genes."
-                                
-                        
-                            
-                        '''
+
                              
 accessions = set(accessions)
 

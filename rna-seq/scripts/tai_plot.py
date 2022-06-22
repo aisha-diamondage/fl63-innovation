@@ -114,6 +114,9 @@ for file in files:
 
                              
 accessions = set(accessions)
+if len(accessions) == 0:
+    "No significant DE."
+
 
 
 #######################

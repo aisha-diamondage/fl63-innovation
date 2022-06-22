@@ -30,9 +30,10 @@ logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
 which_logfc = st.selectbox("Positive log2FC", ["All significant", "Positive only", "Negative only"])
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1.0)
 baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
+count_wobbles = st.check_box("Count wobbles", value = True)
 
 
-#what = "LeuTAA-1"
+#what = "TyrGTA-5"
 #pval_cutoff = 0.05
 #pval_cutoff = 1
 #logfc_cutoff = 1.5
@@ -44,11 +45,14 @@ baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
 files = glob.glob("tai_data/DE/*.csv")
 tai_file = "tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
 raw_counts = "tai_data/rawCounts/raw_counts.csv"
+wobbles = "tai_data/wobbles/Codon-anticodon.csv"
+
 
 #local dev
 #files = glob.glob("../../tai_data/DE/*.csv")
 #tai_file = "../../tai_data/stAIcalc_out/tRNA_expression_"+what+"/output_wi_file.txt"
 #raw_counts = "../../tai_data/rawCounts/raw_counts.csv"
+#wobbles = "../../tai_data/wobbles/Codon-anticodon.csv"
 
 
 d = {}
@@ -159,6 +163,14 @@ with open(raw_counts) as f:
                 #print(raw)
                     
                     
+#####################
+# READ WOBBLES FILE #
+#####################
+wobble= {}
+with open(wobbles) as f:
+    reader = csv.reader(f)
+    for line in reader:
+        wobble[line[0]] = line[1].split("/") 
 
 
 
@@ -185,12 +197,19 @@ for record in records:
     #counts['gene_name'].append(gene_name)
 
 
- 
+    
     for sample in d:
+        
         sample_strip = sample.split("-")[0]
         nuc = sample_strip[-3:]
+        rev_nuc = rev_compl(nuc)
         deseq[gene_acc][0] = gene_name
-        deseq[gene_acc][1] = str(code.count(rev_compl(nuc)))
+        #print(nuc, rev_nuc, sample, wobble[nuc])
+        codon_count = 0
+        for wobble_codon in wobble[nuc]: 
+            codon_count = codon_count + code.count(wobble_codon)
+
+        deseq[gene_acc][1] = str(codon_count)
         for trip in code:
             stai_wi.append(float(wi[trip]))
         deseq[gene_acc].append(geometric_mean(stai_wi))

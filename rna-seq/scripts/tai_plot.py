@@ -30,7 +30,7 @@ logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
 which_logfc = st.selectbox("Positive log2FC", ["All significant", "Positive only", "Negative only"])
 padj_cutoff = st.number_input("adjusted p-value cutoff", value = 1.0)
 baseMean_cutoff = st.number_input("baseMean cutoff", value = 10)
-count_wobbles = st.check_box("Count wobbles", value = True)
+count_wobbles = st.checkbox("Count wobbles", value = True)
 
 
 #what = "TyrGTA-5"

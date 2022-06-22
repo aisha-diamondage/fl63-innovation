@@ -111,7 +111,7 @@ for file in files:
                                                 deseq[line[1]] = line
                             except ValueError:
                                 "No significant DE genes."
-                                break
+                                
                         else:
                             if abs(float(line[log2fc_index])) >= logfc_cutoff:
                                 if float(line[pval_index]) <= pval_cutoff:

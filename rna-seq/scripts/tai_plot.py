@@ -115,8 +115,8 @@ for file in files:
                              
 accessions = set(accessions)
 if len(accessions) == 0:
-    "No significant DE."
-    exit()
+    st.warning('No genes meet your parameters. Please try different cut-offs.')
+    st.stop()
 
 
 

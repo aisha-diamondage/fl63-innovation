@@ -1,4 +1,5 @@
-** tai_plot.py ** is the streamlit script that performs stAI downstream analysis. 
+## tai_plot.py 
+This is the streamlit script that performs stAI downstream analysis. 
 It allows the user to select significance cut-offs from the RNA-Seq analysis.
 counts codon occurrence in the CDS of the genes that are significantly differentially expressed.
 Calculates the stairs based on the previously calculated wi's (these were calculated using stAIcalc).

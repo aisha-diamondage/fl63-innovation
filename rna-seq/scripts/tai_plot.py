@@ -101,7 +101,7 @@ for file in files:
                                             deseq[line[1]] = line
                                             
                         if which_logfc == "Negative only":
-                            if float(line[log2fc_index]) <= logfc_cutoff:
+                            if float((line[log2fc_index])*-1) <= logfc_cutoff:
                                 if float(line[pval_index]) <= pval_cutoff:
                                     if float(line[padj_index]) <= padj_cutoff:
                                         if float(line[baseMean_index]) >= baseMean_cutoff:

@@ -57,7 +57,6 @@ wobbles = "tai_data/wobbles/Codon-anticodon.csv"
 
 
 d = {}
-nucs = []
 accessions = []
 deseq =  {"accession":["symbol", "codonCount", "log2FC","pvalue","padj","statistic","baseMean", "stAI", "averageRawCount"]}
 
@@ -77,11 +76,6 @@ for file in files:
     name = os.path.basename(file).split(" ")[0]
     if name == what:
         d[name]=[]
-    #if name.startswith("Mock") or name.startswith("Vector") or name.startswith("iMet"):
-     #   nucs.append(name)
-    #else:
-     #   nuc = name[-3:]
-      #  nucs.append(nuc)
     
         with open(file) as f:
             reader = csv.reader(f)
@@ -200,10 +194,13 @@ for record in records:
 
     
     for sample in d:
-        
-        sample_strip = sample.split("-")[0]
-        nuc = sample_strip[-3:]
-        rev_nuc = rev_compl(nuc)
+        if sample == "Mock":
+            nuc = "NNN"
+            rev_nuc = "NNN"
+        else:
+            sample_strip = sample.split("-")[0]
+            nuc = sample_strip[-3:]
+            rev_nuc = rev_compl(nuc)
         deseq[gene_acc][0] = gene_name
         #print(nuc, rev_nuc, sample, wobble[nuc])
         codon_count = 0

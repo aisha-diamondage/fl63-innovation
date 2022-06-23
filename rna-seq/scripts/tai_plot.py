@@ -23,7 +23,7 @@ st.title("stAI downstream analysis")
 st.subheader("Selection of cut-offs for differentially exprressed genes")
              
 
-samples_of_interest = ["AsnGTT-3", "GlyTCC-1", "TyrGTA-5", "LeuTAA-1", "ValAAC-2", "ValTAC-1", "ArgTCT-1", "AspGTC-1"]
+samples_of_interest = ["AsnGTT-3", "GlyTCC-1", "TyrGTA-5", "LeuTAA-1", "ValAAC-2", "ValTAC-1", "ArgTCT-1", "AspGTC-1", "Mock"]
 what = st.selectbox("Sample", samples_of_interest)
 pval_cutoff = st.number_input("p-value cutoff", value = 0.05)
 logfc_cutoff = st.number_input("log2FC cutoff", value = 1.5)
